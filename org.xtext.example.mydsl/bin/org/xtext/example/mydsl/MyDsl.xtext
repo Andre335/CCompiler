@@ -1,0 +1,83 @@
+grammar org.xtext.example.mydsl.MyDsl with org.eclipse.xtext.common.Terminals
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate myDsl "http://www.xtext.org/example/mydsl/MyDsl"
+
+Model:
+    greetings+=primary_expression*;
+    
+primary_expression
+	: ID
+	| STRING
+	| DECLARATION
+	| ValAssignment
+	| expression
+	;
+
+IntLiteral:
+	value=INT;
+
+StringLiteral:
+    value=STRING;
+    
+LITERAL:
+	StringLiteral | IntLiteral
+;
+
+ValAssignment:
+    declaration=[DECLARATION] '=' value=LITERAL;
+
+expression:
+	LiteralExpression	
+;
+
+LiteralExpression:
+	IntLiteralExpression
+;
+
+IntLiteralExpression:
+	INT (OP_ARITMETICO INT)*
+;
+
+OP_ARITMETICO:
+	'+'
+	| '-'
+	| '*'
+	| '/'
+;
+
+DECLARATION:
+	type=TYPE isArray?='[]'? name=ID
+;
+
+TYPE:
+	"int" | "string"
+;
+
+terminal ID:
+	('^')?('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+
+terminal INT returns ecore::EInt: 
+    ('0'..'9')+;
+ 
+terminal STRING: 
+    '"' ( '\\'('b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\') | !('\\'|'"') )* '"' |
+    "'" ( '\\'('b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\') | !('\\'|"'") )* "'";
+ 
+terminal ML_COMMENT: 
+    '/*' -> '*/';
+ 
+terminal SL_COMMENT: 
+    '//' !('\n'|'\r')* ('\r'? '\n')?;
+    
+terminal WS: 
+    (' '|'\t'|'\r'|'\n')+;
+
+
+
+
+
+
+	
+
